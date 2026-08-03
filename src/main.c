@@ -37,7 +37,7 @@ while (1) {
 			temp.val1, temp.val2 / 100000,
 			humidity.val1, humidity.val2 / 100000);
 
-		k_msleep(2000);
+		k_msleep(5000);
 	}
 
 	return 0;
