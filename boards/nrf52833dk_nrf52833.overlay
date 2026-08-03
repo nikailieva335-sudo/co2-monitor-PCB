@@ -1,0 +1,36 @@
+#include <zephyr/dt-bindings/pinctrl/nrf-pinctrl.h>
+#include <zephyr/dt-bindings/i2c/i2c.h>
+
+//I2C
+&pinctrl{
+    i2c1_default: i2c1_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 22)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 23)>;
+        };
+    };
+    i2c1_sleep: i2c1_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 22)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 23)>;
+            low-power-enable;
+        };
+    };
+};
+
+&i2c1 {
+    compatible = "nordic,nrf-twim";
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_STANDARD>;
+
+    pinctrl-0 = <&i2c1_default>;
+    pinctrl-1 = <&i2c1_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    scd41: scd4x@62 {
+        compatible = "sensirion,scd41";
+        reg = <0x62>;
+        label = "SCD4X";
+        mode = <0>;  
+    };
+};
