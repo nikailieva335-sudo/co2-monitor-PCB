@@ -7,6 +7,8 @@
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 #define SCD41_NODE DT_NODELABEL(scd41)
+#define ATM_PR_MMHG 760.0 // Atmospheric pressure (standard)
+
 
 int main(void)
 {
@@ -32,10 +34,18 @@ while (1) {
 		sensor_channel_get(scd41, SENSOR_CHAN_CO2, &co2);
 		sensor_channel_get(scd41, SENSOR_CHAN_AMBIENT_TEMP, &temp);
 		sensor_channel_get(scd41, SENSOR_CHAN_HUMIDITY, &humidity);
-		LOG_INF("CO2: %d.%d ppm | Temp: %d.%d°C | Humidity: %d.%d%%\n",
+
+		double co2_ppm = co2.val1 + (co2.val2 / 1000000.0);
+		double co2_mmhg = (co2_ppm/1000000.0) * ATM_PR_MMHG;
+
+		int mmhg_int = (int)co2_mmhg;
+		int mmhg_frac = (int)((co2_mmhg - mmhg_int) * 10000);
+
+		LOG_INF("CO2: %d.%d ppm | Temp: %d.%d°C | Humidity: %d.%d%% | CO2: %d.%04d mmHg\n",
 			co2.val1, co2.val2 / 100000,
 			temp.val1, temp.val2 / 100000,
-			humidity.val1, humidity.val2 / 100000);
+			humidity.val1, humidity.val2 / 100000,
+			mmhg_int, mmhg_frac);
 
 		k_msleep(5000);
 	}
